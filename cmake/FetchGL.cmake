@@ -37,9 +37,8 @@ if(OPENGL_FOUND)
   	  HINTS ${glew_SOURCE_DIR}/bin/Release/${GLEW_ARCH}
   	)
   	find_path(GLEW_INCLUDE_DIRS
-  	  NAMES glew.h
+  	  NAMES GL/glew.h
   	  HINTS ${glew_SOURCE_DIR}/include
-  	  PATH_SUFFIXES GL
   	)
     set(GLEW_FOUND TRUE)
   else()
