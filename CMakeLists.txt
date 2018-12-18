@@ -6,8 +6,8 @@
 # You should have received a copy of the MPL along with this library; see the 
 # file LICENSE. If not, you can obtain one at http://mozilla.org/MPL/2.0/.
 #
-cmake_minimum_required(VERSION 3.1.0)
-project(GUI VERSION 0.2.0)
+cmake_minimum_required(VERSION 3.11.0)
+project(GUI VERSION 0.3.0)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -59,27 +59,27 @@ add_subdirectory(examples)
 
 # Dependency to Geometry
 if(NOT TARGET Geometry)
-	find_package(Geometry 0.2.0 REQUIRED NO_MODULE)
+	find_package(Geometry 0.3.0 REQUIRED NO_MODULE)
 endif()
 target_link_libraries(GUI LINK_PUBLIC Geometry)
 
 # Dependency to Util
 if(NOT TARGET Util)
-	find_package(Util 0.2.0 REQUIRED NO_MODULE)
+	find_package(Util 0.3.0 REQUIRED NO_MODULE)
 endif()
 target_link_libraries(GUI LINK_PUBLIC Util)
 
-# Dependency to OpenGL
-find_package(OpenGL REQUIRED)
-if(IS_DIRECTORY ${OPENGL_INCLUDE_DIR})
-	target_include_directories(GUI PRIVATE ${OPENGL_INCLUDE_DIR})
-endif()
-target_link_libraries(GUI LINK_PRIVATE ${OPENGL_LIBRARIES})
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
-# Dependency to GLEW
-find_package(GLEW REQUIRED)
-target_include_directories(GUI PRIVATE ${GLEW_INCLUDE_DIRS})
-target_link_libraries(GUI LINK_PRIVATE ${GLEW_LIBRARIES})
+# Dependency to OpenGL & GLEW
+include(FetchGL)
+target_compile_definitions(GUI PRIVATE "${GLIMPLEMENTATION_DEFINITIONS}")
+target_include_directories(GUI PRIVATE ${GLIMPLEMENTATION_INCLUDE_DIRS})
+target_link_libraries(GUI LINK_PRIVATE ${GLIMPLEMENTATION_LIBRARIES})
+if(WIN32)
+	# copy dlls to build folder
+	add_custom_command(TARGET GUI POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${GLEW_LIBRARIES} $<TARGET_FILE_DIR:GUI>)
+endif()
 
 # Set version of library
 set_target_properties(GUI PROPERTIES VERSION ${GUI_VERSION}
